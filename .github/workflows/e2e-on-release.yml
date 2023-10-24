@@ -43,7 +43,7 @@ jobs:
           docker image ls -a  
 
       - name: Spinup OpenMRS Instance
-        run: docker-compose up
+        run: docker-compose up -d
         working-directory: e2e_support_files
 
       - name: Wait for OpenMRS instance to start
