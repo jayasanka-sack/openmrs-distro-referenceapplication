@@ -17,11 +17,16 @@ jobs:
         run: while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:8080/openmrs/login.htm)" != "200" ]]; do sleep 10; done
 
       - name: Commit and export Containers
-        run: ./e2e_support_files/commit_and_export_images.sh
+        run:  sh e2e_support_files/commit_and_export_images.sh
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
           path: /e2e_support_files/e2e_release_env_images.tar
+
+  run_patient_chart_e2e_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
 
 
