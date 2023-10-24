@@ -8,7 +8,10 @@ jobs:
 #  build_docker_images:
 #    runs-on: ubuntu-latest
 #    steps:
-#      - uses: actions/checkout@v4
+#      - name: Check out code of n-1 commit
+#        uses: actions/checkout@v4
+#        with:
+#          ref: ${{ github.event.before }}
 #
 #      - name: hi
 #        run: |
@@ -40,13 +43,18 @@ jobs:
     if: ${{ startsWith(github.event.pull_request.title, '(release)') }}
 #    needs: build_docker_images
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out code of n-1 commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.before }}
 
       - name: Extract the version number
         run: |
           file_path="frontend/spa-build-config.json"
           version=$(grep '"@openmrs/esm-patient-registration-app":' "$file_path" | awk -F'"' '{print $4}')
+          echo $version
           echo "TAG=refs/tags/$version" >> $GITHUB_ENV
+
       - name: Checkout to the Patient Chart Repo
         uses: actions/checkout@v4
         with:
