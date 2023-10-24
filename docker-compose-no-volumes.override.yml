@@ -29,8 +29,8 @@ services:
       - backend
 
   backend:
-    build:
-      context: .
+#    build:
+#      context: .
     container_name: backend
 
   db:
