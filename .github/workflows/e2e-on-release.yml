@@ -37,6 +37,7 @@ jobs:
 
   run_patient_chart_e2e_tests:
     runs-on: ubuntu-latest
+    if: ${{ ! startsWith(github.event.pull_request.title, '(release)') }}
 #    needs: build_docker_images
     steps:
       - uses: actions/checkout@v4
@@ -47,7 +48,7 @@ jobs:
           version=$(grep '"@openmrs/esm-patient-registration-app":' "$file_path" | awk -F'"' '{print $4}')
           echo "TAG=refs/tags/$version" >> $GITHUB_ENV
       - name: Checkout to the Patient Chart Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           repository: openmrs/openmrs-esm-patient-management
           ref: ${{ env.TAG }}
