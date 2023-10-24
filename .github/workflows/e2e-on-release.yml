@@ -14,7 +14,10 @@ jobs:
         run: |
           file_path="frontend/spa-build-config.json"
           version=$(grep '"@openmrs/esm-patient-registration-app":' "$file_path" | awk -F'"' '{print $4}')
-          echo "Version: $version"
+          echo "VERSION=$version" >> $GITHUB_ENV
+
+      - name: hoo
+        run: echo $VERSION
 
 
 #      - name: Build and Run Containers
