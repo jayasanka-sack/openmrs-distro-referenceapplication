@@ -49,3 +49,25 @@ jobs:
       - name: Wait for OpenMRS instance to start
         run: while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:8080/openmrs/login.htm)" != "200" ]]; do sleep 10; done
 
+      - name: Checkout to the Patient Chart Repo
+        uses: actions/checkout@v2
+        with:
+          repository: openmrs/openmrs-esm-patient-management
+          path: /e2e_repo
+
+      - name: Wait for OpenMRS instance to start
+        run: while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:8080/openmrs/login.htm)" != "200" ]]; do sleep 10; done
+
+      - name: Run E2E tests
+        run: yarn playwright test
+        working-directory: /e2e_repo
+
+      - name: Upload Report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: /e2e_repo/playwright-report/
+          retention-days: 30
+
+
