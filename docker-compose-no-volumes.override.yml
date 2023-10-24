@@ -13,8 +13,9 @@ services:
       - "80:80"
 
   frontend:
-    build:
-      context: ./frontend
+#    build:
+#      context: ./frontend
+    image: openmrs/openmrs-reference-application-3-frontend:${TAG:-nightly}
     container_name: frontend
     restart: "unless-stopped"
     environment:

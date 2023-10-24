@@ -23,7 +23,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: e2e_release_env_images
-          path: e2e_support_files/e2e_release_env_images.tar
+          path: e2e_release_env_images.tar
 
   run_patient_chart_e2e_tests:
     runs-on: ubuntu-latest
