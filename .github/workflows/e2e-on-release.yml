@@ -12,9 +12,10 @@ jobs:
 
       - name: hi
         run: |
-          content=`cat ./frontend/spa-build-config.json`
-          echo content
-#          echo "${{fromJson(content).frontendModules.@openmrs/esm-patient-registration-app}}"
+          file_path="frontend/spa-build-config.json"
+          version=$(grep '"@openmrs/esm-patient-registration-app":' "$file_path" | awk -F'"' '{print $4}')
+          echo "Version: $version"
+
 
 #      - name: Build and Run Containers
 #        run: docker-compose -f docker-compose-no-volumes.yml -f docker-compose-no-volumes.override.yml up --build -d
