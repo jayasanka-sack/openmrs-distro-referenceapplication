@@ -13,3 +13,6 @@ docker commit $backend_container_id backend
 docker commit $db_container_id db
 
 docker save frontend gateway backend db > e2e_release_env_images.tar
+
+# compress the file (to decrease the upload file size)
+tar czvf e2e_release_env_images.tar.gz e2e_release_env_images.tar
