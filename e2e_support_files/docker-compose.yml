@@ -21,14 +21,8 @@ services:
     restart: "unless-stopped"
     ports:
       - "8080:8080"
-    volumes:
-      - openmrs-data:/openmrs/data
 
-  # MariaDB
   db:
     image: db
     restart: "unless-stopped"
 
-volumes:
-  openmrs-data: ~
-  db-data: ~
