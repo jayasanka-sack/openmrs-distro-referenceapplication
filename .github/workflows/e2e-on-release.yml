@@ -47,9 +47,6 @@ jobs:
         run: docker-compose up -d
         working-directory: e2e_support_files
 
-      - name: Wait for OpenMRS instance to start
-        run: while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:8080/openmrs/login.htm)" != "200" ]]; do sleep 10; done
-
       - name: Checkout to the Patient Chart Repo
         uses: actions/checkout@v2
         with:
