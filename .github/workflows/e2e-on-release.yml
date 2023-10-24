@@ -5,19 +5,19 @@ on:
     branches: [main]
 
 jobs:
-  build_docker_images:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: hi
-        run: |
-          file_path="frontend/spa-build-config.json"
-          version=$(grep '"@openmrs/esm-patient-registration-app":' "$file_path" | awk -F'"' '{print $4}')
-          echo "VERSION=$version" >> $GITHUB_ENV
-
-      - name: hoo
-        run: echo $VERSION
+#  build_docker_images:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v4
+#
+#      - name: hi
+#        run: |
+#          file_path="frontend/spa-build-config.json"
+#          version=$(grep '"@openmrs/esm-patient-registration-app":' "$file_path" | awk -F'"' '{print $4}')
+#          echo "VERSION=$version" >> $GITHUB_ENV
+#
+#      - name: hoo
+#        run: echo $VERSION
 
 
 #      - name: Build and Run Containers
@@ -35,12 +35,24 @@ jobs:
 #          name: e2e_release_env_images
 #          path: e2e_release_env_images.tar.gz
 
-#  run_patient_chart_e2e_tests:
-#    runs-on: ubuntu-latest
-#    needs: build_docker_images
-#    steps:
-#      - uses: actions/checkout@v4
-#
+  run_patient_chart_e2e_tests:
+    runs-on: ubuntu-latest
+    needs: build_docker_images
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract the version number
+        run: |
+          file_path="frontend/spa-build-config.json"
+          version=$(grep '"@openmrs/esm-patient-registration-app":' "$file_path" | awk -F'"' '{print $4}')
+          echo "VERSION=$version" >> $GITHUB_ENV
+      - name: Checkout to the Patient Chart Repo
+        uses: actions/checkout@v2
+        with:
+          repository: openmrs/openmrs-esm-patient-management
+          ref: 'refs/tags/$VERSION'
+          path: e2e_repo
+
 #      - name: Download Docker Images
 #        uses: actions/download-artifact@v3
 #        with:
