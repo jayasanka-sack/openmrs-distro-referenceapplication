@@ -13,6 +13,7 @@ jobs:
       - name: hi
         run: |
           content=`cat ./frontend/spa-build-config.json`
+          echo content
           echo "${{fromJson(content).frontendModules.@openmrs/esm-patient-registration-app}}"
 
 #      - name: Build and Run Containers
