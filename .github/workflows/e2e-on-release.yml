@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - id: set_var
+      - name: hi
         run: |
           content=`cat ./frontend/spa-build-config.json`
           echo "${{fromJson($content).frontendModules.@openmrs/esm-patient-registration-app}}"
