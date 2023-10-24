@@ -8,7 +8,7 @@ services:
       - frontend
       - backend
     ports:
-      - "80:80"
+      - "8080:80"
 
   frontend:
     image: frontend

@@ -56,6 +56,19 @@ jobs:
           repository: openmrs/openmrs-esm-patient-management
           path: /e2e_repo
 
+      - name: Copy test environment variables
+        run: cp example.env .env
+        working-directory: /e2e_repo
+
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: yarn install --immutable
+        working-directory: /e2e_repo
+
+      - name: Install Playwright Browsers
+        run: npx playwright install chromium --with-deps
+        working-directory: /e2e_repo
+
       - name: Wait for OpenMRS instance to start
         run: while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:8080/openmrs/login.htm)" != "200" ]]; do sleep 10; done
 
