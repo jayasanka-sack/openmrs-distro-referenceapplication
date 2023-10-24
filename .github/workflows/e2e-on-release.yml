@@ -46,7 +46,7 @@ jobs:
       - name: Check out code of n-1 commit
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.before }}
+          ref: 'HEAD^'
 
       - name: Extract the version number
         run: |
