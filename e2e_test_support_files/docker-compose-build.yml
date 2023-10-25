@@ -29,9 +29,8 @@ services:
       - backend
 
   backend:
-#    build:
-#      context: ../
-    image: openmrs/openmrs-reference-application-3-backend:${TAG:-nightly}
+    build:
+      context: ../
     container_name: backend
     depends_on:
       - db
