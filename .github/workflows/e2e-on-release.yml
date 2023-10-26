@@ -122,8 +122,8 @@ jobs:
 
       - name: Load Docker Images
         run: |
-          tar xzvf /tmp/e2e_release_env_images.tar.gz
-          docker load --input e2e_release_env_images.tar
+          gzip -d ${{ steps.tempdir.outputs.tmpdir }}/e2e_release_env_images.tar.gz
+          docker load --input ${{ steps.tempdir.outputs.tmpdir }}/e2e_release_env_images.tar
           docker image ls -a
 
       - name: Spin up an OpenMRS Instance
@@ -179,8 +179,8 @@ jobs:
 
       - name: Load Docker Images
         run: |
-          tar xzvf /tmp/e2e_release_env_images.tar.gz
-          docker load --input e2e_release_env_images.tar
+          gzip -d ${{ steps.tempdir.outputs.tmpdir }}/e2e_release_env_images.tar.gz
+          docker load --input ${{ steps.tempdir.outputs.tmpdir }}/e2e_release_env_images.tar
           docker image ls -a
 
       - name: Spin up an OpenMRS Instance
@@ -236,8 +236,8 @@ jobs:
 
       - name: Load Docker Images
         run: |
-          tar xzvf /tmp/e2e_release_env_images.tar.gz
-          docker load --input e2e_release_env_images.tar
+          gzip -d ${{ steps.tempdir.outputs.tmpdir }}/e2e_release_env_images.tar.gz
+          docker load --input ${{ steps.tempdir.outputs.tmpdir }}/e2e_release_env_images.tar
           docker image ls -a
 
       - name: Spin up an OpenMRS Instance
@@ -293,8 +293,8 @@ jobs:
 
       - name: Load Docker Images
         run: |
-          tar xzvf /tmp/e2e_release_env_images.tar.gz
-          docker load --input e2e_release_env_images.tar
+          gzip -d ${{ steps.tempdir.outputs.tmpdir }}/e2e_release_env_images.tar.gz
+          docker load --input ${{ steps.tempdir.outputs.tmpdir }}/e2e_release_env_images.tar
           docker image ls -a
 
       - name: Spin up an OpenMRS Instance
