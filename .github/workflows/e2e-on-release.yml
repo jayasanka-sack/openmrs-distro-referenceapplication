@@ -21,9 +21,7 @@ jobs:
           fetch-depth: 0
 
       - name: Checkout to the release commit
-        run: |
-          release_commit_sha=$(git log --oneline | awk 'NR==3 {print $1}')
-          git checkout $release_commit_sha
+        run: git checkout HEAD^{/\(release\)}
 
       - name: Extract version numbers from the spa-build-config.json file
         id: versions
@@ -33,7 +31,7 @@ jobs:
         run: docker-compose -f e2e_test_support_files/docker-compose-build.yml up -d
 
       - name: Wait for the backend to start
-        run: while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:8080/openmrs/login.htm)" != "200" ]]; do sleep 10; done
+        run: while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost/openmrs/login.htm)" != "200" ]]; do sleep 10; done
 
       - name: Commit and export Containers
         run: sh e2e_test_support_files/commit_and_export_images.sh
