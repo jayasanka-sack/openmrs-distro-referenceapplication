@@ -9,7 +9,7 @@ get_repository_tag() {
   local version=$(awk -F'"' -v app="$app" '$0 ~ app {print $4}' "$file")
   local ref="refs/tags/v$version"
 
-  # Check if the version number contains "pre" and modify the ref accordingly
+  # Check if the version number contains "pre" and modify the ref to main
   if [[ $version == *"pre"* ]]; then
     ref="main"
   fi
