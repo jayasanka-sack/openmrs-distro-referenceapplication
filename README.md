@@ -1,5 +1,6 @@
 # OpenMRS 3.0 Reference Application
 
+
 This project holds the build configuration for the OpenMRS 3.0 reference application, found on
 https://dev3.openmrs.org and https://o3.openmrs.org.
 
