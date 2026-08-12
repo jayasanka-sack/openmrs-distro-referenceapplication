@@ -82,3 +82,43 @@ loki.write "local" {
     url = "http://loki:3100/loki/api/v1/push"
   }
 }
+
+// cAdvisor container metrics — collected by Alloy and forwarded to Prometheus
+// via an OTLP pipeline (prometheus.scrape → otelcol.receiver.prometheus →
+// otelcol.exporter.otlphttp → Prometheus native OTLP receiver).
+// cAdvisor v0.55.x has no built-in OTLP export, so Alloy acts as the OTLP
+// bridge; Prometheus never scrapes cAdvisor directly.
+
+prometheus.scrape "cadvisor" {
+  targets    = [{"__address__" = "cadvisor:8080"}]
+  forward_to = [prometheus.relabel.cadvisor.receiver]
+  job_name   = "cadvisor"
+}
+
+prometheus.relabel "cadvisor" {
+  forward_to = [otelcol.receiver.prometheus.cadvisor.receiver]
+
+  rule {
+    source_labels = ["container_label_com_docker_compose_service"]
+    regex         = "(.+)"
+    target_label  = "name"
+    replacement   = "$1"
+  }
+
+  rule {
+    regex  = "container_label_.*"
+    action = "labeldrop"
+  }
+}
+
+otelcol.receiver.prometheus "cadvisor" {
+  output {
+    metrics = [otelcol.exporter.otlphttp.prometheus.input]
+  }
+}
+
+otelcol.exporter.otlphttp "prometheus" {
+  client {
+    endpoint = "http://prometheus:9090/api/v1/otlp"
+  }
+}
