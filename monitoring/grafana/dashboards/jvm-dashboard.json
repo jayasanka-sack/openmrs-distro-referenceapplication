@@ -20,20 +20,7 @@
         "sort": 1,
         "multi": false,
         "includeAll": false,
-        "current": { "text": "openmrs/openmrs-backend", "value": "openmrs/openmrs-backend" }
-      },
-      {
-        "name": "instance",
-        "label": "Instance",
-        "type": "query",
-        "datasource": { "type": "prometheus", "uid": "Prometheus" },
-        "definition": "label_values(jvm_class_count{job=\"$job\"}, instance)",
-        "query": { "query": "label_values(jvm_class_count{job=\"$job\"}, instance)", "refId": "instance" },
-        "refresh": 1,
-        "sort": 1,
-        "multi": false,
-        "includeAll": false,
-        "current": { "text": "openmrs-backend-0", "value": "openmrs-backend-0" }
+        "current": { "text": "openmrs-backend", "value": "openmrs-backend" }
       }
     ]
   },
@@ -49,7 +36,7 @@
         {
           "refId": "A",
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
-          "expr": "100 * sum(jvm_memory_used_bytes{job=\"$job\", instance=\"$instance\", jvm_memory_type=\"heap\"}) / max(jvm_memory_limit_bytes{job=\"$job\", instance=\"$instance\", jvm_memory_type=\"heap\"})",
+          "expr": "100 * sum(jvm_memory_used_bytes{job=\"$job\", jvm_memory_type=\"heap\"}) / max(jvm_memory_limit_bytes{job=\"$job\", jvm_memory_type=\"heap\"})",
           "legendFormat": ""
         }
       ],
@@ -90,7 +77,7 @@
         {
           "refId": "A",
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
-          "expr": "sum(jvm_memory_used_bytes{job=\"$job\", instance=\"$instance\", jvm_memory_type=\"heap\"})",
+          "expr": "sum(jvm_memory_used_bytes{job=\"$job\", jvm_memory_type=\"heap\"})",
           "legendFormat": ""
         }
       ],
@@ -124,7 +111,7 @@
         {
           "refId": "A",
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
-          "expr": "sum(jvm_thread_count{job=\"$job\", instance=\"$instance\"})",
+          "expr": "sum(jvm_thread_count{job=\"$job\"})",
           "legendFormat": ""
         }
       ],
@@ -162,7 +149,7 @@
         {
           "refId": "A",
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
-          "expr": "jvm_class_count{job=\"$job\", instance=\"$instance\"}",
+          "expr": "jvm_class_count{job=\"$job\"}",
           "legendFormat": ""
         }
       ],
@@ -196,13 +183,13 @@
         {
           "refId": "A",
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
-          "expr": "sum by (jvm_memory_type) (jvm_memory_used_bytes{job=\"$job\", instance=\"$instance\"})",
+          "expr": "sum by (jvm_memory_type) (jvm_memory_used_bytes{job=\"$job\"})",
           "legendFormat": "{{jvm_memory_type}}"
         },
         {
           "refId": "B",
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
-          "expr": "max(jvm_memory_limit_bytes{job=\"$job\", instance=\"$instance\", jvm_memory_type=\"heap\"})",
+          "expr": "max(jvm_memory_limit_bytes{job=\"$job\", jvm_memory_type=\"heap\"})",
           "legendFormat": "heap max"
         }
       ],
@@ -239,7 +226,7 @@
         {
           "refId": "A",
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
-          "expr": "jvm_memory_used_bytes{job=\"$job\", instance=\"$instance\"}",
+          "expr": "jvm_memory_used_bytes{job=\"$job\"}",
           "legendFormat": "{{jvm_memory_pool_name}}"
         }
       ],
@@ -272,7 +259,7 @@
         {
           "refId": "A",
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
-          "expr": "sum by (jvm_gc_name) (rate(jvm_gc_duration_seconds_sum{job=\"$job\", instance=\"$instance\"}[5m]))",
+          "expr": "sum by (jvm_gc_name) (rate(jvm_gc_duration_seconds_sum{job=\"$job\"}[5m]))",
           "legendFormat": "{{jvm_gc_name}}"
         }
       ],
@@ -301,7 +288,7 @@
         {
           "refId": "A",
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
-          "expr": "sum by (jvm_gc_name) (rate(jvm_gc_duration_seconds_count{job=\"$job\", instance=\"$instance\"}[5m]))",
+          "expr": "sum by (jvm_gc_name) (rate(jvm_gc_duration_seconds_count{job=\"$job\"}[5m]))",
           "legendFormat": "{{jvm_gc_name}}"
         }
       ],
@@ -329,7 +316,7 @@
         {
           "refId": "A",
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
-          "expr": "sum by (jvm_thread_state) (jvm_thread_count{job=\"$job\", instance=\"$instance\"})",
+          "expr": "sum by (jvm_thread_state) (jvm_thread_count{job=\"$job\"})",
           "legendFormat": "{{jvm_thread_state}}"
         }
       ],
@@ -361,7 +348,7 @@
         {
           "refId": "A",
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
-          "expr": "jvm_cpu_recent_utilization_ratio{job=\"$job\", instance=\"$instance\"}",
+          "expr": "jvm_cpu_recent_utilization_ratio{job=\"$job\"}",
           "legendFormat": "utilization"
         }
       ],
@@ -398,7 +385,7 @@
         {
           "refId": "A",
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
-          "expr": "jvm_memory_used_after_last_gc_bytes{job=\"$job\", instance=\"$instance\"}",
+          "expr": "jvm_memory_used_after_last_gc_bytes{job=\"$job\"}",
           "legendFormat": "{{jvm_memory_pool_name}}"
         }
       ],

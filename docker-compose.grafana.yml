@@ -86,17 +86,11 @@ services:
     backend:
       environment:
         OMRS_OTEL_ENABLED: true
-        OTEL_EXPORTER_OTLP_ENDPOINT: http://alloy:4317
-        # Set explicitly: the agent defaults to http/protobuf, which cannot talk
-        # to the gRPC listener on 4317. Use http/protobuf + :4318 instead if your
-        # collector is only reachable over HTTP/1.1.
-        OTEL_EXPORTER_OTLP_PROTOCOL: grpc
+        OTEL_EXPORTER_OTLP_ENDPOINT: http://alloy:4318
         OTEL_SERVICE_NAME: openmrs-backend
-        OTEL_JMX_TARGET_SYSTEM: tomcat
         OTEL_METRICS_EXPORTER: otlp
         OTEL_TRACES_EXPORTER: none
         OTEL_LOGS_EXPORTER: none
-        OTEL_RESOURCE_ATTRIBUTES: "service.namespace=openmrs,deployment.environment.name=dev"
 
 volumes:
     grafana-data:
