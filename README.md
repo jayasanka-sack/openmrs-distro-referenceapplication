@@ -232,13 +232,77 @@ The certbot entrypoint skips certificate generation when it finds existing certi
 
 ### Running with Grafana
 
-The service can run with Grafana for monitoring logs. You can run it with:
+The distro ships an optional monitoring stack -- Grafana, Prometheus, Loki, Alloy and
+blackbox-exporter -- which collects container logs, HTTP endpoint probes and JVM metrics
+from the OpenMRS backend. Run it with:
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.grafana.yml up
 ```
 Grafana will be available at http://localhost/grafana. Use admin as username and see docker-compose.grafana.yml for the initial password.
 
+Three dashboards are provisioned automatically:
+
+| Dashboard | Data source | Shows |
+|-----------|-------------|-------|
+| Logs (home) | Loki | Container logs, filterable by service, level and free text |
+| JVM Runtime | Prometheus | Backend heap, GC, threads, loaded classes and CPU |
+| Endpoint health check | Prometheus | Availability and latency of probed HTTP endpoints |
+
 If you would like to use grafana in your distro, you just need to copy over `docker-compose.grafana.yml`.
+
+Note that this is a single-node example: Prometheus, Loki and Grafana each store data in a
+local volume. For production or multi-replica deployments, reuse the configuration pattern
+shown here rather than the compose file itself.
+
+### Backend metrics (OpenTelemetry)
+
+JVM metrics come from the OpenTelemetry Java agent, which is bundled in the `openmrs-core`
+base image (downloaded and checksum-verified in that image's Dockerfile). Setting
+`OMRS_OTEL_ENABLED=true` makes the backend's startup script attach the agent to Tomcat.
+No OpenMRS code reads the `OTEL_*` variables -- the agent picks them up from the
+environment itself, so this compose file is the entire configuration surface.
+
+The path is: Java agent -> OTLP/HTTP -> Alloy -> Prometheus -> Grafana.
+
+Because the agent auto-instruments the whole web application, it exports HTTP server and
+JDBC client metrics in addition to the `jvm.*` family. The provisioned dashboard plots the
+JVM metrics only; anything else the agent sends is still queryable in Prometheus.
+
+#### Configuration options
+
+| Variable | Agent default | Set by this stack | Description |
+|----------|---------------|-------------------|-------------|
+| `OMRS_OTEL_ENABLED` | `false` | `true` | Attaches the Java agent. Nothing is exported without it |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | `http://localhost:4318` | `http://alloy:4318` | Where to send OTLP data |
+| `OTEL_EXPORTER_OTLP_PROTOCOL` | `http/protobuf` | (not set) | Set to `grpc` and use port `4317` if your collector only exposes gRPC |
+| `OTEL_SERVICE_NAME` | `unknown_service:java` | `openmrs-backend` | Becomes the Prometheus `job` label |
+| `OTEL_METRICS_EXPORTER` | `otlp` | `otlp` | Metrics exporter to use |
+| `OTEL_TRACES_EXPORTER` | `otlp` | `none` | Tracing is off; Alloy's OTLP receiver only forwards metrics |
+| `OTEL_LOGS_EXPORTER` | `otlp` | `none` | Log export is off; Alloy collects container logs from Docker instead |
+| `OTEL_RESOURCE_ATTRIBUTES` | (empty) | (not set) | Extra resource attributes, e.g. `service.instance.id=backend-0,deployment.environment.name=prod` |
+| `OTEL_JMX_TARGET_SYSTEM` | (empty) | (not set) | Collects JMX metrics for a known system, e.g. `tomcat` |
+
+To enable tracing, set `OTEL_TRACES_EXPORTER=otlp` and add a `traces` output to the OTLP
+receiver in `monitoring/config.alloy`, which currently forwards metrics only.
+
+#### Prometheus labels
+
+Alloy converts OTLP resource attributes into Prometheus labels:
+
+- `service.name` becomes the `job` label
+- `service.namespace`, if set, prefixes it as `job="<namespace>/<name>"`
+- `service.instance.id`, if set, becomes the `instance` label
+- all other resource attributes land on the `target_info` metric, reachable with a
+  `group_left` join on `(job, instance)`
+
+This stack sets only `OTEL_SERVICE_NAME`, so the JVM dashboard filters on
+`job="openmrs-backend"` alone. **If you run more than one backend replica, give each a
+unique `service.instance.id`** via `OTEL_RESOURCE_ATTRIBUTES` -- otherwise every replica
+writes to the same series and Prometheus rejects the duplicate samples.
+
+Metric names follow OpenTelemetry semantic conventions and are translated to Prometheus
+naming by Alloy, so upgrading the agent version in `openmrs-core` can rename series and
+require dashboard updates.
 
 ### Environment variables reference
 
