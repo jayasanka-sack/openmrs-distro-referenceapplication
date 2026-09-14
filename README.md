@@ -240,11 +240,12 @@ docker compose -f docker-compose.yml -f docker-compose.grafana.yml up
 ```
 Grafana will be available at http://localhost/grafana. Use admin as username and see docker-compose.grafana.yml for the initial password.
 
-Two dashboards are provisioned automatically:
+Three dashboards are provisioned automatically:
 
 | Dashboard | Data source | Shows |
 |-----------|-------------|-------|
 | Logs (home) | Loki | Container logs, filterable by service, level and free text |
+| JVM Runtime | Prometheus | Backend heap, GC, threads, loaded classes and CPU |
 | Endpoint health check | Prometheus | Availability and latency of probed HTTP endpoints |
 
 If you would like to use grafana in your distro, you just need to copy over `docker-compose.grafana.yml`.
@@ -283,6 +284,25 @@ JVM metrics only; anything else the agent sends is still queryable in Prometheus
 
 To enable tracing, set `OTEL_TRACES_EXPORTER=otlp` and add a `traces` output to the OTLP
 receiver in `monitoring/config.alloy`, which currently forwards metrics only.
+
+#### Prometheus labels
+
+Alloy converts OTLP resource attributes into Prometheus labels:
+
+- `service.name` becomes the `job` label
+- `service.namespace`, if set, prefixes it as `job="<namespace>/<name>"`
+- `service.instance.id`, if set, becomes the `instance` label
+- all other resource attributes land on the `target_info` metric, reachable with a
+  `group_left` join on `(job, instance)`
+
+This stack sets only `OTEL_SERVICE_NAME`, so the JVM dashboard filters on
+`job="openmrs-backend"` alone. **If you run more than one backend replica, give each a
+unique `service.instance.id`** via `OTEL_RESOURCE_ATTRIBUTES` -- otherwise every replica
+writes to the same series and Prometheus rejects the duplicate samples.
+
+Metric names follow OpenTelemetry semantic conventions and are translated to Prometheus
+naming by Alloy, so upgrading the agent version in `openmrs-core` can rename series and
+require dashboard updates.
 
 ### Environment variables reference
 
