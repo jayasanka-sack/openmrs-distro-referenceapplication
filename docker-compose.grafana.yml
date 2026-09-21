@@ -32,12 +32,31 @@ services:
             monitoring-init:
                 condition: service_completed_successfully
 
+    cadvisor:
+        image: gcr.io/cadvisor/cadvisor:v0.55.1
+        privileged: true
+        volumes:
+            - /:/rootfs:ro
+            - /var/run/docker.sock:/var/run/docker.sock:ro
+            # cAdvisor's docker factory needs containerd too, otherwise it falls back to
+            # raw cgroups and emits no container names or labels (so no service_name).
+            - /run/containerd/containerd.sock:/run/containerd/containerd.sock:ro
+            - /sys:/sys:ro
+            - /var/lib/docker:/var/lib/docker:ro
+            - /dev/disk:/dev/disk:ro
+        devices:
+            - /dev/kmsg
+
     alloy:
         image: grafana/alloy:v1.13.1
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
             - alloy-config:/etc/alloy
-        command: run --server.http.listen-addr=0.0.0.0:12345 --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy
+        command:
+            - run
+            - --server.http.listen-addr=0.0.0.0:12345
+            - --storage.path=/var/lib/alloy/data
+            - /etc/alloy
         depends_on:
             monitoring-init:
                 condition: service_completed_successfully
